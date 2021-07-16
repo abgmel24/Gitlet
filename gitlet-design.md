@@ -1,16 +1,16 @@
 # Gitlet Design Document
 
-**Name**:
+**Name**: Abhiram Gudimella, Alexander Tian
 
 ## Classes and Data Structures
 
-### Class 1
+### Commit
 
 #### Fields
 
-1. Field 1
-2. Field 2
-
+1. Message - contains the message of commit
+2. Timestamp - time at which the commit was constructed
+3. Parent - the parent of a commit object (which is also a commit)
 
 ### Class 2
 
