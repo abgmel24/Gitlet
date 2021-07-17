@@ -10,6 +10,7 @@ public class Main {
     /** Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
+
     public static void main(String[] args) {
         // TODO: what if args is empty?
         if(args.length == 0) {
@@ -26,10 +27,10 @@ public class Main {
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
-                c.commit();
+                c.add();
                 break;
             case "commit":
-
+                c.commit();
                 break;
             case "rm":
 
