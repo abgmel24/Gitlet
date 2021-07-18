@@ -36,7 +36,7 @@ public class Main {
 
                 break;
             case "log":
-
+                c.log();
                 break;
             case "global-log":
 

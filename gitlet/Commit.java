@@ -39,7 +39,7 @@ public class Commit implements Serializable {
     /** The Commit File. */
     public static final File COMMITS = join(GITLET_DIR, "commits.txt");
 
-    public static final File BLOBS = join(GITLET_DIR, "blobs.txt");
+    public static final File BLOBS = join(GITLET_DIR, "blobList.txt");
 
     /* TODO: fill in the rest of this class. */
 

@@ -1,4 +1,5 @@
 .gitlet
+.testfile1.txt
 .DS_Store
 sentinel
 __pycache__

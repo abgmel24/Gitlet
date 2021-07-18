@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 
 import static gitlet.Utils.*;
 
@@ -24,6 +25,8 @@ public class Branch implements Serializable {
             return;
         }
         Utils.writeObject(branch, this);
+        Branch thisBranch = Utils.readObject(branch, Branch.class);
+        System.out.println("Initialized branch: " + thisBranch.getName());
     }
 
     public void setHead(Commit commit) {
@@ -38,5 +41,9 @@ public class Branch implements Serializable {
 
     public String getCurrentCommitId() {
         return commitId;
+    }
+
+    public String getName() {
+        return name;
     }
 }

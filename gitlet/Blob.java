@@ -23,7 +23,7 @@ public class Blob implements Serializable {
         return byteArray;
     }
 
-    public boolean compareBlob(byte[] other) {
-        return byteArray.equals(other);
+    public boolean compareBlob(String other) {
+        return new String(byteArray).equals(other);
     }
 }

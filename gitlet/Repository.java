@@ -30,6 +30,7 @@ public class Repository implements Serializable {
     /** The .gitlet directory. */
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
     public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
+    public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
 
     /* TODO: fill in the rest of this class. */
     public Repository() {
@@ -41,17 +42,20 @@ public class Repository implements Serializable {
 
     private void initializeRepo() {
         /** Initialize State */
-        HashMap<String,Object> state = new HashMap<>();
+        HashMap<String,String> state = new HashMap<>();
         /** Create initial commit */
+        File commit = Utils.join(GITLET_DIR, "commits.txt");
+        HashMap<String,Commit> CommitsMap = new HashMap<>();
+        Utils.writeObject(commit, CommitsMap);
         Commit init = new Commit("init commit", null, new Date(0));
         init.addCommit(init.generateKey());
-        state.put("currentCommit", init);
+        state.put("currentCommit", init.getKey());
         /** Create master branch and set its head*/
         File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
         BRANCH_DIR.mkdir();
         Branch master = new Branch("master.txt");
         master.setHead(init);
-        state.put("currentBranch", master);
+        state.put("currentBranch", master.getName());
         /** Create staging area */
         StagingArea stage = new StagingArea();
         /** Create empty blobs arraylist */
@@ -63,12 +67,18 @@ public class Repository implements Serializable {
     }
 
     public static Branch getCurrentBranch() {
-        HashMap<String,Object> state = Utils.readObject(STATE, HashMap.class);
-        return (Branch) state.get("currentBranch");
+        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
+        String currentBranchName = state.get("currentBranch");
+        File branchFile = Utils.join(BRANCH_DIR, currentBranchName);
+        Branch currentBranch = Utils.readObject(branchFile, Branch.class);
+        return currentBranch;
     }
 
     public static Commit getCurrentCommit() {
-        HashMap<String,Object> state = Utils.readObject(STATE, HashMap.class);
-        return (Commit) state.get("currentCommit");
+        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
+        String currentBranchName = state.get("currentBranch");
+        File commitFile = Utils.join(BRANCH_DIR, currentBranchName);
+        Commit currentCommit = Utils.readObject(commitFile, Commit.class);
+        return currentCommit;
     }
 }
