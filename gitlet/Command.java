@@ -10,7 +10,7 @@ import java.util.List;
 
 import static gitlet.Utils.join;
 
-public class Command {
+public class Command implements Serializable{
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
@@ -58,14 +58,14 @@ public class Command {
         }
         currentBranch.setHead(newCommit);
         // Test
-        Branch newBranch = Repository.getCurrentBranch();
-        System.out.println("Updated Branch");
-        System.out.println(newBranch);
-        HashMap<String,Commit> commitsMap = Utils.readObject(COMMITS, HashMap.class);
-        System.out.println("Updated Commits Hash Map");
-        System.out.println(commitsMap);
-        ArrayList<Blob> newBlobsList = Utils.readObject(blobsFile, ArrayList.class);
-        System.out.println(newBlobsList);
+//        Branch newBranch = Repository.getCurrentBranch();
+//        System.out.println("Updated Branch");
+//        System.out.println(newBranch);
+//        HashMap<String,Commit> commitsMap = Utils.readObject(COMMITS, HashMap.class);
+//        System.out.println("Updated Commits Hash Map");
+//        System.out.println(commitsMap);
+//        ArrayList<Blob> newBlobsList = Utils.readObject(blobsFile, ArrayList.class);
+//        System.out.println(newBlobsList);
     }
 
     /** gitlet add - checks if file exists, then compares to latest commit's iteration and adds if different */
@@ -105,7 +105,7 @@ public class Command {
         while (latestCommit != null) {
             latestCommit.printCommitLog();
             System.out.println(commitHashMap);
-            System.out.println(latestCommit.getParent());
+            System.out.println(latestCommit);
             String parent = latestCommit.getParent();
             if (parent != null) {
                 latestCommit = commitHashMap.get(parent);

@@ -9,7 +9,6 @@ import static gitlet.Utils.*;
 public class Branch implements Serializable {
 
     private String name;
-    private File branch;
     private String commitId;
 
     public static final File CWD = new File(System.getProperty("user.dir"));
@@ -19,19 +18,20 @@ public class Branch implements Serializable {
 
     public Branch(String name) {
         this.name = name;
-        this.branch = Utils.join(BRANCH_DIR, name);
-        if (this.branch.exists()) {
+        File branchFile = Utils.join(BRANCH_DIR, name);
+        if (branchFile.exists()) {
             System.out.println("Branch " + name + "already exists");
             return;
         }
-        Utils.writeObject(branch, this);
-        Branch thisBranch = Utils.readObject(branch, Branch.class);
+        Utils.writeObject(branchFile, this);
+        Branch thisBranch = Utils.readObject(branchFile, Branch.class);
         System.out.println("Initialized branch: " + thisBranch.getName());
     }
 
     public void setHead(Commit commit) {
         commitId = commit.getKey();
-        Utils.writeObject(branch, this);
+        File branchFile = Utils.join(BRANCH_DIR, name);
+        Utils.writeObject(branchFile, this);
     }
 
     public Commit getCurrentCommit() {

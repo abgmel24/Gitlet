@@ -60,6 +60,7 @@ public class Commit implements Serializable {
 
     public void addCommit(String key) {
         HashMap<String,Commit> CommitsMap = readObject(COMMITS, HashMap.class);
+        System.out.println(this.getParent());
         CommitsMap.put(key, this);
         Utils.writeObject(COMMITS, CommitsMap);
     }
@@ -98,6 +99,7 @@ public class Commit implements Serializable {
 
     public void printCommitLog() {
         System.out.println("===");
+        System.out.println(this.getParent());
         System.out.println(key);
         System.out.println(String.format("Date: " + timestamp.toString()));
         System.out.println(message);
