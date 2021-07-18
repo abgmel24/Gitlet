@@ -89,6 +89,7 @@ class Utils {
     }
 
     /* READING AND WRITING FILE CONTENTS */
+    // byte[] commitsFile = readContents(commits.txt)
 
     /** Return the entire contents of FILE as a byte array.  FILE must
      *  be a normal file.  Throws IllegalArgumentException
@@ -203,7 +204,6 @@ class Utils {
     static File join(File first, String... others) {
         return Paths.get(first.getPath(), others).toFile();
     }
-
 
     /* SERIALIZATION UTILITIES */
 

@@ -1,21 +1,29 @@
 package gitlet;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.Serializable;
 
 import static gitlet.Utils.*;
 
-public class Blob {
-    // Blob class
+public class Blob implements Serializable {
 
     private File file;
     private byte[] byteArray;
-    private static ArrayList<Blob> blobs = new ArrayList<Blob>();
 
     public Blob (File f) {
         this.file = f;
         byteArray = readContents(f);
-        blobs.add(this);
     }
 
+    public String getName() {
+        return file.getName();
+    }
+
+    public byte[] getByteArray() {
+        return byteArray;
+    }
+
+    public boolean compareBlob(Blob other) {
+        return byteArray.equals(other.getByteArray());
+    }
 }

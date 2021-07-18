@@ -27,10 +27,10 @@ public class Main {
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
-                c.add();
+                c.add(args[1]);
                 break;
             case "commit":
-                c.commit();
+                c.commit(args[1]);
                 break;
             case "rm":
 

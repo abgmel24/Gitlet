@@ -1,27 +1,75 @@
 package gitlet;
 
 import java.io.File;
-
-import static gitlet.Utils.join;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public class Command {
 
+    public static final File CWD = new File(System.getProperty("user.dir"));
+    public static final File REPO_DIR = Utils.join(CWD, ".gitlet/gitletRepo");
+    public static final File stageAdd = Utils.join(REPO_DIR, "stage/stageAdd");
+
     public void init() {
-        File curr = new File(System.getProperty("user.dir"));
-        File repo = Utils.join(curr, ".gitlet/gitletRepo");
-        if (repo.exists()) {
+        if (REPO_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             return;
         }
-        Commit initial = new Commit("initial commit", null);
         Repository newRepo = new Repository();
+//        File repoState = Utils.join(REPO_DIR, "repoState");
+//        Utils.writeObject(repoState, (Serializable) newRepo);
     }
 
-    public void commit() {
+    public void commit(String message) {
+        List<String> fileNames = Utils.plainFilenamesIn(stageAdd);
+        Branch currentBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currentBranch.getCurrentCommit();
+        HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
+        Commit newCommit = new Commit(message, latestCommit, new Date());
+
+        File blobsFile = Utils.join(REPO_DIR, "blobs");
+        ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
+        for (Object key : latestCommitBlobs.keySet()) {
+            int index = latestCommitBlobs.get(key);
+            newCommit.addBlob(latestCommit.getBlob(key.toString()), index);
+        }
+        for (int i = 0; i < fileNames.size(); i++) {
+            File curr = Utils.join(stageAdd, fileNames.get(i));
+            Blob currBlob = Utils.readObject(curr, Blob.class);
+            blobsList.add(currBlob);
+            int blobIndex = blobsList.size() - 1;
+            newCommit.addBlob(currBlob, blobIndex);
+        }
+        String newKey = newCommit.generateKey();
+        newCommit.addCommit(newKey);
+        for(File file: stageAdd.listFiles()) {
+            file.delete();
+        }
+        currentBranch.setHead(newCommit);
+    }
+
+    /** gitlet add - checks if file exists, then compares to latest commit's iteration and adds if different */
+    public void add(String fileName) {
+        File fileToAdd = Utils.join(REPO_DIR, fileName);
+        if (!fileToAdd.exists()) {
+            System.out.println("File does not exist.");
+            return;
+        }
+        Blob curr = new Blob(fileToAdd);
+        Branch currentBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currentBranch.getCurrentCommit();
+        if (!curr.compareBlob(latestCommit.getBlob(fileName))) {
+            File addFile = Utils.join(stageAdd, fileName);
+            Utils.writeObject(addFile, curr);
+        }
+    }
+
+    public void checkout() {
 
     }
 
-    public void add() {
 
-    }
 }
