@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import static gitlet.Utils.*;
 
@@ -27,38 +28,47 @@ public class Repository implements Serializable {
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
-    public static final File GITLET_DIR = join(CWD, ".gitlet");
-    public static final File REPO_DIR = join(GITLET_DIR, "gitletRepo");
-    private static Branch currentBranch;
+    public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
+    public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
 
     /* TODO: fill in the rest of this class. */
     public Repository() {
-        if (!REPO_DIR.exists()) {
+        if (!GITLET_DIR.exists()) {
             GITLET_DIR.mkdir();
-            REPO_DIR.mkdir();
             initializeRepo();
         }
     }
 
     private void initializeRepo() {
+        /** Initialize State */
+        HashMap<String,Object> state = new HashMap<>();
         /** Create initial commit */
         Commit init = new Commit("init commit", null, new Date(0));
         init.addCommit(init.generateKey());
+        state.put("currentCommit", init);
         /** Create master branch and set its head*/
-        File BRANCH_DIR = Utils.join(REPO_DIR, "branches");
+        File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
         BRANCH_DIR.mkdir();
-        Branch master = new Branch("master");
+        Branch master = new Branch("master.txt");
         master.setHead(init);
-        currentBranch = master;
+        state.put("currentBranch", master);
         /** Create staging area */
         StagingArea stage = new StagingArea();
         /** Create empty blobs arraylist */
-        File blobListFile = Utils.join(REPO_DIR, "blobList");
+        File blobListFile = Utils.join(GITLET_DIR, "blobList.txt");
         ArrayList<Blob> blobList = new ArrayList<>();
         Utils.writeObject(blobListFile, blobList);
+        /** Create Saved State */
+        Utils.writeObject(STATE, state);
     }
 
     public static Branch getCurrentBranch() {
-        return currentBranch;
+        HashMap<String,Object> state = Utils.readObject(STATE, HashMap.class);
+        return (Branch) state.get("currentBranch");
+    }
+
+    public static Commit getCurrentCommit() {
+        HashMap<String,Object> state = Utils.readObject(STATE, HashMap.class);
+        return (Commit) state.get("currentCommit");
     }
 }

@@ -8,6 +8,7 @@ package gitlet;
  import java.util.HashMap;
 
  import static gitlet.Utils.join;
+ import static gitlet.Utils.readObject;
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -29,20 +30,16 @@ public class Commit implements Serializable {
     private Date timestamp;
     private Commit parent;
     private String key;
-    private static HashMap<String, Commit> CommitsMap = new HashMap<>();
-    private HashMap<String, Integer> blobsInCommit = new HashMap<>();
+    private HashMap<String, Integer> blobsInCommit;
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
-    /** The .gitletRepo directory. */
-    public static final File REPO_DIR = Utils.join(GITLET_DIR, "gitletRepo");
-
     /** The Commit File. */
-    public static final File COMMITS = join(REPO_DIR, "commits.txt");
+    public static final File COMMITS = join(GITLET_DIR, "commits.txt");
 
-    public static final File BLOBS = join(REPO_DIR, "blobs.txt");
+    public static final File BLOBS = join(GITLET_DIR, "blobs.txt");
 
     /* TODO: fill in the rest of this class. */
 
@@ -50,8 +47,10 @@ public class Commit implements Serializable {
         this.message = message;
         this.parent = parent;
         this.timestamp = timestamp;
+        blobsInCommit = new HashMap<>();
     }
 
+    /** Create Commit Helper Functions */
     public String generateKey() {
         String key = Utils.sha1(Utils.serialize(this));
         this.key = key;
@@ -59,6 +58,7 @@ public class Commit implements Serializable {
     }
 
     public void addCommit(String key) {
+        HashMap<String,Commit> CommitsMap = readObject(COMMITS, HashMap.class);
         CommitsMap.put(key, this);
         Utils.writeObject(COMMITS, CommitsMap);
     }

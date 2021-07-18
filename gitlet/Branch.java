@@ -13,8 +13,8 @@ public class Branch implements Serializable {
     private String commitId;
 
     public static final File CWD = new File(System.getProperty("user.dir"));
-    public static final File REPO_DIR = Utils.join(CWD, ".gitlet/gitletRepo");
-    public static final File BRANCH_DIR = Utils.join(REPO_DIR, "branches");
+    public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
+    public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
 
     public Branch(String name) {
         this.name = name;

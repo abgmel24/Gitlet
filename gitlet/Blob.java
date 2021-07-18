@@ -7,23 +7,23 @@ import static gitlet.Utils.*;
 
 public class Blob implements Serializable {
 
-    private File file;
+    private String fileName;
     private byte[] byteArray;
 
-    public Blob (File f) {
-        this.file = f;
-        byteArray = readContents(f);
+    public Blob (String fileName, byte[] byteArray) {
+        this.fileName = fileName;
+        this.byteArray = byteArray;
     }
 
     public String getName() {
-        return file.getName();
+        return fileName;
     }
 
     public byte[] getByteArray() {
         return byteArray;
     }
 
-    public boolean compareBlob(Blob other) {
-        return byteArray.equals(other.getByteArray());
+    public boolean compareBlob(byte[] other) {
+        return byteArray.equals(other);
     }
 }

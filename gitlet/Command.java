@@ -10,11 +10,11 @@ import java.util.List;
 public class Command {
 
     public static final File CWD = new File(System.getProperty("user.dir"));
-    public static final File REPO_DIR = Utils.join(CWD, ".gitlet/gitletRepo");
-    public static final File stageAdd = Utils.join(REPO_DIR, "stage/stageAdd");
+    public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
+    public static final File stageAdd = Utils.join(GITLET_DIR, "stage/stageAdd");
 
     public void init() {
-        if (REPO_DIR.exists()) {
+        if (GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             return;
         }
@@ -30,7 +30,7 @@ public class Command {
         HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
         Commit newCommit = new Commit(message, latestCommit, new Date());
 
-        File blobsFile = Utils.join(REPO_DIR, "blobs");
+        File blobsFile = Utils.join(GITLET_DIR, "blobs.txt");
         ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
         for (Object key : latestCommitBlobs.keySet()) {
             int index = latestCommitBlobs.get(key);
@@ -52,19 +52,26 @@ public class Command {
     }
 
     /** gitlet add - checks if file exists, then compares to latest commit's iteration and adds if different */
-    public void add(String fileName) {
-        File fileToAdd = Utils.join(REPO_DIR, fileName);
+    public void add(String filePath) {
+        File fileToAdd = Utils.join(CWD, filePath);
+        String fileName = fileToAdd.getName();
+        System.out.println(fileName);
         if (!fileToAdd.exists()) {
             System.out.println("File does not exist.");
             return;
         }
-        Blob curr = new Blob(fileToAdd);
+        byte[] fileContent = Utils.readContents(fileToAdd);
+        File addFile = Utils.join(stageAdd, fileName);
+        Blob curr = new Blob(fileName, fileContent);
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
-        if (!curr.compareBlob(latestCommit.getBlob(fileName))) {
-            File addFile = Utils.join(stageAdd, fileName);
-            Utils.writeObject(addFile, curr);
+        if (latestCommit.getBlobsMap().containsKey(fileName)) {
+            if (!latestCommit.getBlob(fileName).compareBlob(fileContent)) {
+                Utils.writeObject(addFile, curr);
+                return;
+            }
         }
+        Utils.writeObject(addFile, curr);
     }
 
     public void checkout() {
