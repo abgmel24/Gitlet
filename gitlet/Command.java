@@ -34,7 +34,7 @@ public class Command {
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
         HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
-        Commit newCommit = new Commit(message, latestCommit, new Date());
+        Commit newCommit = new Commit(message, latestCommit.getKey(), new Date());
         File blobsFile = Utils.join(GITLET_DIR, "blobList.txt");
         ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
         for (int i = 0; i < fileNames.size(); i++) {
@@ -99,12 +99,31 @@ public class Command {
     }
 
     public void log() {
+        Branch currentBranch = Repository.getCurrentBranch();
+        HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
+        Commit latestCommit = currentBranch.getCurrentCommit();
+        while (latestCommit != null) {
+            latestCommit.printCommitLog();
+            System.out.println(commitHashMap);
+            System.out.println(latestCommit.getParent());
+            String parent = latestCommit.getParent();
+            if (parent != null) {
+                latestCommit = commitHashMap.get(parent);
+            } else {
+                latestCommit = null;
+            }
+        }
+    }
+
+    public void fileCheckout(String dash, String fileName) {
 
     }
 
-    public void checkout() {
+    public void commitCheckout(String commitId, String dash, String fileName){
 
     }
 
+    public void branchCheckout(String branchName) {
 
+    }
 }

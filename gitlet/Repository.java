@@ -49,7 +49,7 @@ public class Repository implements Serializable {
         Utils.writeObject(commit, CommitsMap);
         Commit init = new Commit("init commit", null, new Date(0));
         init.addCommit(init.generateKey());
-        state.put("currentCommit", init.getKey());
+//        state.put("currentCommit", init.getKey());
         /** Create master branch and set its head*/
         File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
         BRANCH_DIR.mkdir();
@@ -74,11 +74,11 @@ public class Repository implements Serializable {
         return currentBranch;
     }
 
-    public static Commit getCurrentCommit() {
-        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
-        String currentBranchName = state.get("currentBranch");
-        File commitFile = Utils.join(BRANCH_DIR, currentBranchName);
-        Commit currentCommit = Utils.readObject(commitFile, Commit.class);
-        return currentCommit;
-    }
+//    public static Commit getCurrentCommit() {
+//        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
+//        String currentBranchName = state.get("currentCommit");
+//        File commitFile = Utils.join(BRANCH_DIR, currentBranchName);
+//        Commit currentCommit = Utils.readObject(commitFile, Commit.class);
+//        return currentCommit;
+//    }
 }

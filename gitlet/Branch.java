@@ -10,12 +10,12 @@ public class Branch implements Serializable {
 
     private String name;
     private File branch;
-    private Commit currentCommit;
     private String commitId;
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
     public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
+    public static final File COMMITS = join(GITLET_DIR, "commits.txt");
 
     public Branch(String name) {
         this.name = name;
@@ -31,11 +31,12 @@ public class Branch implements Serializable {
 
     public void setHead(Commit commit) {
         commitId = commit.getKey();
-        currentCommit = commit;
         Utils.writeObject(branch, this);
     }
 
     public Commit getCurrentCommit() {
+        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        Commit currentCommit = commitsHashMap.get(commitId);
         return currentCommit;
     }
 

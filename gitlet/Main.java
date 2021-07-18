@@ -48,7 +48,13 @@ public class Main {
 
                 break;
             case "checkout":
-
+                if (args.length == 2) {
+                    c.branchCheckout(args[1]);
+                } else if (args.length == 3) {
+                    c.fileCheckout(args[1], args[2]);
+                } else if (args.length == 4){
+                    c.commitCheckout(args[1], args[2], args[3]);
+                }
                 break;
             case "branch":
 

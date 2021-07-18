@@ -5,6 +5,7 @@ package gitlet;
  import java.io.Serializable;
  import java.util.ArrayList;
  import java.util.Date;
+ import java.util.Formatter;
  import java.util.HashMap;
 
  import static gitlet.Utils.join;
@@ -28,7 +29,7 @@ public class Commit implements Serializable {
     /** The message of this Commit. */
     private String message;
     private Date timestamp;
-    private Commit parent;
+    private String parent;
     private String key;
     private HashMap<String, Integer> blobsInCommit;
 
@@ -43,7 +44,7 @@ public class Commit implements Serializable {
 
     /* TODO: fill in the rest of this class. */
 
-    public Commit(String message, Commit parent, Date timestamp) {
+    public Commit(String message, String parent, Date timestamp) {
         this.message = message;
         this.parent = parent;
         this.timestamp = timestamp;
@@ -77,6 +78,7 @@ public class Commit implements Serializable {
         return blobsInCommit;
     }
 
+    /** Commit Identifiers */
     public String getKey() {
         return key;
     }
@@ -85,7 +87,19 @@ public class Commit implements Serializable {
         return message;
     }
 
-    public Commit getParent() {
+    public String getParent() {
         return parent;
+    }
+
+    //===
+    //commit a0da1ea5a15ab613bf9961fd86f010cf74c7ee48
+    //Date: Thu Nov 9 20:00:05 2017 -0800
+    //A commit message.
+
+    public void printCommitLog() {
+        System.out.println("===");
+        System.out.println(key);
+        System.out.println(String.format("Date: " + timestamp.toString()));
+        System.out.println(message);
     }
 }
