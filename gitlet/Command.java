@@ -55,15 +55,6 @@ public class Command implements Serializable{
             file.delete();
         }
         currentBranch.setHead(newCommit);
-        // Test
-//        Branch newBranch = Repository.getCurrentBranch();
-//        System.out.println("Updated Branch");
-//        System.out.println(newBranch);
-//        HashMap<String,Commit> commitsMap = Utils.readObject(COMMITS, HashMap.class);
-//        System.out.println("Updated Commits Hash Map");
-//        System.out.println(commitsMap);
-//        ArrayList<Blob> newBlobsList = Utils.readObject(blobsFile, ArrayList.class);
-//        System.out.println(newBlobsList);
     }
 
     /** gitlet add - checks if file exists, then compares to latest commit's iteration and adds if different */
@@ -115,14 +106,13 @@ public class Command implements Serializable{
             Blob blobCurrent = blobsList.get(commitBlobs.get(fileName));
             Utils.writeContents(fileToCheckout, blobCurrent.getFileContent());
         } else {
-            System.out.println("File does not exist in that commit");
+            System.out.println("File does not exist in that commit.");
             return;
         }
     }
 
     public void commitCheckout(String commitId, String dash, String fileName){
         File fileToCheckout = new File(CWD, fileName); //current version of the file
-
         Branch currBranch = Repository.getCurrentBranch();
         HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
         if (!commitsHashMap.containsKey(commitId)) {
@@ -134,7 +124,7 @@ public class Command implements Serializable{
         HashMap<String,Integer> commitBlobs = latestCommit.getBlobsMap();
         if(commitBlobs.containsKey(fileName)) {
             Blob blobCurrent = blobsList.get(commitBlobs.get(fileName));
-            Utils.writeObject(fileToCheckout, blobCurrent.getFileContent());
+            Utils.writeContents(fileToCheckout, blobCurrent.getFileContent());
         } else {
             System.out.println("File does not exist in that commit.");
             return;

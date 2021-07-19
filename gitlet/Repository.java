@@ -47,7 +47,7 @@ public class Repository implements Serializable {
         File commit = Utils.join(GITLET_DIR, "commits.txt");
         HashMap<String,Commit> CommitsMap = new HashMap<>();
         Utils.writeObject(commit, CommitsMap);
-        Commit init = new Commit("init commit", null, new Date(0));
+        Commit init = new Commit("initial commit", null, new Date(0));
         init.addCommit(init.generateKey());
 //        state.put("currentCommit", init.getKey());
         /** Create master branch and set its head*/
