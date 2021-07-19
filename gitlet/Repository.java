@@ -74,18 +74,20 @@ public class Repository implements Serializable {
         return currentBranch;
     }
 
+    public static void setCurrentBranch(String branchName) {
+        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
+        state.put("currentBranch", branchName);
+        Utils.writeObject(STATE, state);
+    }
+
     public static Branch getBranch(String branchName) {
         File branchFile = Utils.join(BRANCH_DIR, branchName);
         Branch currentBranch = Utils.readObject(branchFile, Branch.class);
         return currentBranch;
     }
 
+    /** update state with tracked and untracked files */
+    public static void updateStagingArea() {
 
-//    public static Commit getCurrentCommit() {
-//        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
-//        String currentBranchName = state.get("currentCommit");
-//        File commitFile = Utils.join(BRANCH_DIR, currentBranchName);
-//        Commit currentCommit = Utils.readObject(commitFile, Commit.class);
-//        return currentCommit;
-//    }
+    }
 }

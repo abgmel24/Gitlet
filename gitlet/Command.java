@@ -23,8 +23,6 @@ public class Command implements Serializable{
             return;
         }
         Repository newRepo = new Repository();
-//        File repoState = Utils.join(REPO_DIR, "repoState");
-//        Utils.writeObject(repoState, (Serializable) newRepo);
     }
 
     /** gitlet commit - creates new commit and compares current stageAdd files to previous commit files to
@@ -72,24 +70,18 @@ public class Command implements Serializable{
     public void add(String filePath) {
         File fileToAdd = Utils.join(CWD, filePath);
         String fileName = fileToAdd.getName();
-        System.out.println(fileName);
         if (!fileToAdd.exists()) {
             System.out.println("File does not exist.");
             return;
         }
-        byte[] fileContent = Utils.readContents(fileToAdd);
+        byte[] fileContentBytes = Utils.readContents(fileToAdd);
         String fileContentString = Utils.readContentsAsString(fileToAdd);
         File addFile = Utils.join(stageAdd, fileName);
-        Blob curr = new Blob(fileName, fileContent);
+        Blob curr = new Blob(fileName, fileContentBytes, fileContentString);
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
-        System.out.println("Previous Commit Blobs: \n" + latestCommit.getBlobsMap().toString());
         if (latestCommit.getBlobsMap().containsKey(fileName)) {
-            System.out.println(latestCommit.getBlob(fileName).getName());
-            System.out.println(new String(latestCommit.getBlob(fileName).getByteArray(), StandardCharsets.UTF_8));
-            System.out.println(fileContentString);
             if (!latestCommit.getBlob(fileName).compareBlob(fileContentString)) {
-                System.out.println("Adding");
                 Utils.writeObject(addFile, curr);
                 return;
             }
@@ -104,8 +96,6 @@ public class Command implements Serializable{
         Commit latestCommit = currentBranch.getCurrentCommit();
         while (latestCommit != null) {
             latestCommit.printCommitLog();
-            System.out.println(commitHashMap);
-            System.out.println(latestCommit);
             String parent = latestCommit.getParent();
             if (parent != null) {
                 latestCommit = commitHashMap.get(parent);
@@ -119,27 +109,32 @@ public class Command implements Serializable{
         File fileToCheckout = new File(CWD, fileName); //current version of the file
         Branch currBranch = Repository.getCurrentBranch();
         Commit latestCommit = currBranch.getCurrentCommit();
-        byte[] fileContent = Utils.readContents(fileToCheckout);
         if(latestCommit.getBlobsMap().containsKey(fileName)) {
-            /*Blob latestBlob = (Blob) latestCommit.getBlobsMap().get(fileName);
-            byte[] latestFileContents = latestBlob.getByteArray();
-            Utils.writeObject(fileToCheckout, fileContent);*/
+            Blob latestBlob = (Blob) latestCommit.getBlobsMap().get(fileName);
+            String latestFileContents = latestBlob.getFileContent();
+            Utils.writeContents(fileToCheckout, latestFileContents);
         } else {
-            Utils.writeObject(fileToCheckout, fileContent);
+            System.out.println("File does not exist in that commit");
+            return;
         }
-
-
     }
 
     public void commitCheckout(String commitId, String dash, String fileName){
         File fileToCheckout = new File(CWD, fileName); //current version of the file
 
         Branch currBranch = Repository.getCurrentBranch();
+        HashMap<String, Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        if (!commitsHashMap.containsKey(commitId)) {
+            System.out.println("No commit with that id exists.");
+            return;
+        }
         Commit revertingCommit = currBranch.getCommit(commitId);
-
         if(revertingCommit.getBlobsMap().containsKey(fileName)) {
             Blob revertingBlob = (Blob) revertingCommit.getBlobsMap().get(fileName); //old version of the file
             Utils.writeObject(fileToCheckout, revertingBlob);
+        } else {
+            System.out.println("File does not exist in that commit.");
+            return;
         }
         return;
     }

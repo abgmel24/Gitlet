@@ -15,6 +15,7 @@ public class Branch implements Serializable {
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
     public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
     public static final File COMMITS = join(GITLET_DIR, "commits.txt");
+    public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
 
     public Branch(String name) {
         this.name = name;
@@ -25,13 +26,15 @@ public class Branch implements Serializable {
         }
         Utils.writeObject(branchFile, this);
         Branch thisBranch = Utils.readObject(branchFile, Branch.class);
-        System.out.println("Initialized branch: " + thisBranch.getName());
     }
 
     public void setHead(Commit commit) {
         commitId = commit.getKey();
         File branchFile = Utils.join(BRANCH_DIR, name);
         Utils.writeObject(branchFile, this);
+        if (STATE.exists()) {
+            Repository.setCurrentBranch(name);
+        }
     }
 
     public Commit getCurrentCommit() {
