@@ -101,7 +101,7 @@ public class Commit implements Serializable {
     public void printCommitLog() {
         System.out.println("===");
         System.out.println("commit " + key);
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("E M dd hh:mm:ss y Z");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("E MMM dd hh:mm:ss y Z");
         System.out.println("Date: " + dateFormatter.format(timestamp));
         System.out.println(message + "\n");
     }
