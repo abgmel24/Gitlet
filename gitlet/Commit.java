@@ -3,6 +3,7 @@ package gitlet;
 // TODO: any imports you need here
  import java.io.File;
  import java.io.Serializable;
+ import java.text.SimpleDateFormat;
  import java.util.ArrayList;
  import java.util.Date;
  import java.util.Formatter;
@@ -96,11 +97,13 @@ public class Commit implements Serializable {
     //Date: Thu Nov 9 20:00:05 2017 -0800
     //A commit message.
 
+
     public void printCommitLog() {
         System.out.println("===");
         System.out.println(this.getParent());
-        System.out.println(key);
-        System.out.println(String.format("Date: " + timestamp.toString()));
+        System.out.println("commit " + key);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("E M dd hh:mm:ss y Z");
+        System.out.println("Date: " + dateFormatter.format(timestamp));
         System.out.println(message + "\n");
     }
 }

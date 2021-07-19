@@ -2,7 +2,6 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ public class Command implements Serializable{
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
     public static final File COMMITS = join(GITLET_DIR, "commits.txt");
     public static final File stageAdd = Utils.join(GITLET_DIR, "stage/stageAdd");
+    public static final File BLOBS = Utils.join(GITLET_DIR, "blobList.txt");
 
     public void init() {
         if (GITLET_DIR.exists()) {
@@ -106,12 +106,15 @@ public class Command implements Serializable{
     }
 
     public void fileCheckout(String dash, String fileName) {
+        System.out.println("fileCheckout");
         File fileToCheckout = new File(CWD, fileName); //current version of the file
         Branch currBranch = Repository.getCurrentBranch();
         Commit latestCommit = currBranch.getCurrentCommit();
-        if(latestCommit.getBlobsMap().containsKey(fileName)) {
-            Blob latestBlob = (Blob) latestCommit.getBlobsMap().get(fileName);
-            String latestFileContents = latestBlob.getFileContent();
+        ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
+        HashMap<String,Integer> commitBlobs = latestCommit.getBlobsMap();
+        if(commitBlobs.containsKey(fileName)) {
+            Blob blobCurrent = blobsList.get(commitBlobs.get(fileName));
+            String latestFileContents = blobCurrent.getFileContent();
             Utils.writeContents(fileToCheckout, latestFileContents);
         } else {
             System.out.println("File does not exist in that commit");
@@ -120,18 +123,21 @@ public class Command implements Serializable{
     }
 
     public void commitCheckout(String commitId, String dash, String fileName){
+        System.out.println("commitCheckout");
         File fileToCheckout = new File(CWD, fileName); //current version of the file
 
         Branch currBranch = Repository.getCurrentBranch();
-        HashMap<String, Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
         if (!commitsHashMap.containsKey(commitId)) {
             System.out.println("No commit with that id exists.");
             return;
         }
-        Commit revertingCommit = currBranch.getCommit(commitId);
-        if(revertingCommit.getBlobsMap().containsKey(fileName)) {
-            Blob revertingBlob = (Blob) revertingCommit.getBlobsMap().get(fileName); //old version of the file
-            Utils.writeObject(fileToCheckout, revertingBlob);
+        Commit latestCommit = currBranch.getCommit(commitId);
+        ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
+        HashMap<String,Integer> commitBlobs = latestCommit.getBlobsMap();
+        if(commitBlobs.containsKey(fileName)) {
+            Blob blobCurrent = blobsList.get(commitBlobs.get(fileName)); //old version of the file
+            Utils.writeObject(fileToCheckout, blobCurrent);
         } else {
             System.out.println("File does not exist in that commit.");
             return;
@@ -143,8 +149,7 @@ public class Command implements Serializable{
         Branch branch = Repository.getBranch(branchName);
         Commit branchCommit = branch.getCurrentCommit();
         HashMap<String, Integer> branchBlobs = branchCommit.getBlobsMap();
-        File blobsFile = Utils.join(GITLET_DIR, "blobList.txt");
-        ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
+        ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
         for(File f: CWD.listFiles()) {
             //if(untracked) {
             //  System,out.println("There is an untracked file in the way; delete it, or add and commit it first.");
