@@ -106,7 +106,6 @@ public class Command implements Serializable{
     }
 
     public void fileCheckout(String dash, String fileName) {
-        System.out.println("fileCheckout");
         File fileToCheckout = new File(CWD, fileName); //current version of the file
         Branch currBranch = Repository.getCurrentBranch();
         Commit latestCommit = currBranch.getCurrentCommit();
@@ -123,7 +122,6 @@ public class Command implements Serializable{
     }
 
     public void commitCheckout(String commitId, String dash, String fileName){
-        System.out.println("commitCheckout");
         File fileToCheckout = new File(CWD, fileName); //current version of the file
 
         Branch currBranch = Repository.getCurrentBranch();
