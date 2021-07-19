@@ -113,8 +113,7 @@ public class Command implements Serializable{
         HashMap<String,Integer> commitBlobs = latestCommit.getBlobsMap();
         if(commitBlobs.containsKey(fileName)) {
             Blob blobCurrent = blobsList.get(commitBlobs.get(fileName));
-            String latestFileContents = blobCurrent.getFileContent();
-            Utils.writeContents(fileToCheckout, latestFileContents);
+            Utils.writeContents(fileToCheckout, blobCurrent.getFileContent());
         } else {
             System.out.println("File does not exist in that commit");
             return;
@@ -134,8 +133,8 @@ public class Command implements Serializable{
         ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
         HashMap<String,Integer> commitBlobs = latestCommit.getBlobsMap();
         if(commitBlobs.containsKey(fileName)) {
-            Blob blobCurrent = blobsList.get(commitBlobs.get(fileName)); //old version of the file
-            Utils.writeObject(fileToCheckout, blobCurrent);
+            Blob blobCurrent = blobsList.get(commitBlobs.get(fileName));
+            Utils.writeObject(fileToCheckout, blobCurrent.getFileContent());
         } else {
             System.out.println("File does not exist in that commit.");
             return;
