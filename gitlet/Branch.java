@@ -40,6 +40,12 @@ public class Branch implements Serializable {
         return currentCommit;
     }
 
+    public Commit getCommit(String id) {
+        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        Commit currentCommit = commitsHashMap.get(id);
+        return currentCommit;
+    }
+
     public String getCurrentCommitId() {
         return commitId;
     }

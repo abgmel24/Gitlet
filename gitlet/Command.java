@@ -116,14 +116,51 @@ public class Command implements Serializable{
     }
 
     public void fileCheckout(String dash, String fileName) {
+        File fileToCheckout = new File(CWD, fileName); //current version of the file
+        Branch currBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currBranch.getCurrentCommit();
+        byte[] fileContent = Utils.readContents(fileToCheckout);
+        if(latestCommit.getBlobsMap().containsKey(fileName)) {
+            /*Blob latestBlob = (Blob) latestCommit.getBlobsMap().get(fileName);
+            byte[] latestFileContents = latestBlob.getByteArray();
+            Utils.writeObject(fileToCheckout, fileContent);*/
+        } else {
+            Utils.writeObject(fileToCheckout, fileContent);
+        }
+
 
     }
 
     public void commitCheckout(String commitId, String dash, String fileName){
+        File fileToCheckout = new File(CWD, fileName); //current version of the file
 
+        Branch currBranch = Repository.getCurrentBranch();
+        Commit revertingCommit = currBranch.getCommit(commitId);
+
+        if(revertingCommit.getBlobsMap().containsKey(fileName)) {
+            Blob revertingBlob = (Blob) revertingCommit.getBlobsMap().get(fileName); //old version of the file
+            Utils.writeObject(fileToCheckout, revertingBlob);
+        }
+        return;
     }
 
     public void branchCheckout(String branchName) {
-
+        Branch branch = Repository.getBranch(branchName);
+        Commit branchCommit = branch.getCurrentCommit();
+        HashMap<String, Integer> branchBlobs = branchCommit.getBlobsMap();
+        File blobsFile = Utils.join(GITLET_DIR, "blobList.txt");
+        ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
+        for(File f: CWD.listFiles()) {
+            //if(untracked) {
+            //  System,out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+            //  return;
+            // }
+            //f.delete();
+        }
+        for (Object key : branchBlobs.keySet()) {
+            Blob blobCurrent = blobsList.get(branchBlobs.get(key));
+            File x = Utils.join(CWD, blobCurrent.getName());
+            Utils.writeObject(x, blobCurrent.getByteArray());
+        }
     }
 }

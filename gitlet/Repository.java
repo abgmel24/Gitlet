@@ -74,6 +74,13 @@ public class Repository implements Serializable {
         return currentBranch;
     }
 
+    public static Branch getBranch(String branchName) {
+        File branchFile = Utils.join(BRANCH_DIR, branchName);
+        Branch currentBranch = Utils.readObject(branchFile, Branch.class);
+        return currentBranch;
+    }
+
+
 //    public static Commit getCurrentCommit() {
 //        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
 //        String currentBranchName = state.get("currentCommit");
