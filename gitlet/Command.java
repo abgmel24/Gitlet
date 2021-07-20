@@ -2,20 +2,30 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static gitlet.Utils.join;
+import static gitlet.Utils.plainFilenamesIn;
 
 public class Command implements Serializable{
+
+    //rm [file name]
+    //global-log
+    //find [commit message]
+    //status
+    //checkout [branch name]
+    //branch [branch name]
+    //rm-branch [branch name]
+    //reset [commit id]
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
     public static final File COMMITS = join(GITLET_DIR, "commits.txt");
     public static final File stageAdd = Utils.join(GITLET_DIR, "stage/stageAdd");
+    public static final File stageRm = Utils.join(GITLET_DIR, "stage/stageRm");
     public static final File BLOBS = Utils.join(GITLET_DIR, "blobList.txt");
+    public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
+
 
     public void init() {
         if (GITLET_DIR.exists()) {
@@ -23,6 +33,7 @@ public class Command implements Serializable{
             return;
         }
         Repository newRepo = new Repository();
+        System.out.println(plainFilenamesIn(CWD).toString());
     }
 
     /** gitlet commit - creates new commit and compares current stageAdd files to previous commit files to
@@ -130,6 +141,35 @@ public class Command implements Serializable{
             return;
         }
         return;
+    }
+
+    public void status() {
+        //Branches
+        System.out.println("=== Branches ====") ;
+        List<String> list = Utils.plainFilenamesIn(BRANCH_DIR);
+        for(String s: list) {
+            if(s.equals(Repository.getCurrentBranch().getName())) {
+                System.out.println("*" + s);
+            } else {
+                System.out.println(s);
+            }
+        }
+        //Staged Files
+        System.out.println("\n=== Staged Files ===");
+        list = Utils.plainFilenamesIn(stageAdd);
+        for(String s: list) {
+            System.out.println(s);
+        }
+        //Removed Files
+        System.out.println("\n===Removed Files===");
+        list = plainFilenamesIn(stageRm);
+        for(String s: list) {
+            System.out.println(s);
+        }
+        //Modifications Not Staged for Commit
+
+        //Untracked Files
+
     }
 
     public void branchCheckout(String branchName) {
