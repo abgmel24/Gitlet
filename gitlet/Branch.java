@@ -49,6 +49,10 @@ public class Branch implements Serializable {
         return currentCommit;
     }
 
+    public void setCommitId(String commitId) {
+        this.commitId = commitId;
+    }
+
     public String getCurrentCommitId() {
         return commitId;
     }

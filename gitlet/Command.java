@@ -1,18 +1,17 @@
 package gitlet;
 
+import java.awt.*;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
-import static gitlet.Utils.join;
-import static gitlet.Utils.plainFilenamesIn;
+import static gitlet.Utils.*;
 
 public class Command implements Serializable{
 
     //rm [file name]
-    //find [commit message]
     //checkout [branch name]
-    //rm-branch [branch name]
     //reset [commit id]
 
     public static final File CWD = new File(System.getProperty("user.dir"));
@@ -22,6 +21,7 @@ public class Command implements Serializable{
     public static final File stageRm = Utils.join(GITLET_DIR, "stage/stageRm");
     public static final File BLOBS = Utils.join(GITLET_DIR, "blobList.txt");
     public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
+    public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
 
 
     public void init() {
@@ -94,18 +94,21 @@ public class Command implements Serializable{
         HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
         Commit latestCommit = currentBranch.getCurrentCommit();
         while (latestCommit != null) {
-            if(latestCommit.getBranchName().equals(currentBranch.getName())) {
-                latestCommit.printCommitLog();
-            }
             String parent = latestCommit.getParent();
-            latestCommit = commitHashMap.get(parent);
+            latestCommit.printCommitLog();
+            if(parent != null) {
+                latestCommit = commitHashMap.get(parent);
+            } else {
+                latestCommit = null;
+            }
         }
     }
 
     public void logFull() {
         HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
-        for(int i = commitHashMap.size() - 1; i >= 0; i++) {
-            commitHashMap.get(i).printCommitLog();
+        for(Map.Entry mapElement: commitHashMap.entrySet()) {
+            String key = mapElement.getKey().toString();
+            commitHashMap.get(key).printCommitLog();
         }
     }
 
@@ -196,7 +199,7 @@ public class Command implements Serializable{
             Utils.writeObject(x, blobCurrent.getByteArray());
         }
     }
-
+    /**BROKEN*/
     public void createBranch(String branchName) {
         /** Create initial commit */
         File commit = Utils.join(GITLET_DIR, "commits.txt");
@@ -205,20 +208,55 @@ public class Command implements Serializable{
         Commit init = new Commit("initial commit", null, new Date(0), branchName);
         init.addCommit(init.generateKey());
 //        state.put("currentCommit", init.getKey());
-        /** Create master branch and set its head*/
+        /** Create a new branch and set its head*/
         Branch branch = new Branch(branchName +".txt");
-        Utils.writeObject(BRANCH_DIR, branch);
+        branch.setCommitId(init.getKey());
+        File branchFile = Utils.join(BRANCH_DIR, branch.getName());
+        if(branchFile.exists()) {
+            System.out.println("A branch with that name already exists.");
+            return;
+        }
+        Utils.writeObject(branchFile, branch);
     }
 
-    public void removeBranch(String branchnName) {
-
+    public void removeBranch(String branchName) {
+        File f = Utils.join(BRANCH_DIR, branchName);
+        if(!f.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            return;
+        }
+        HashMap<String, String> state = Utils.readObject(STATE, HashMap.class);
+        if(state.get("currentBranch").equals(branchName + ".txt")) {
+            System.out.println("Cannot remove the current branch.");
+            return;
+        } else {
+            f.delete();
+        }
     }
 
-    public void find(String commitID) {
-
+    public void find(String message) {
+        HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
+        boolean condition = false;
+        for(Map.Entry mapElement: commitHashMap.entrySet()) {
+            String key = mapElement.getKey().toString();
+            Commit commit = (Commit) mapElement.getValue();
+            if(commit.getMessage().equals(message)) {
+                System.out.println(key);
+                condition = true;
+            }
+        }
+        if(!condition) {
+            System.out.println("Found no commit with that message.");
+        }
     }
 
     public void reset(String commitID) {
-
+        HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
+        if(!commitHashMap.containsKey(commitID)) {
+            System.out.println("No commit with that id exists.");
+            return;
+        }
+        //
+        //
     }
 }
