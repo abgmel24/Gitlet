@@ -28,6 +28,7 @@ public class Commit implements Serializable {
      */
 
     /** The message of this Commit. */
+    private String branchName;
     private String message;
     private Date timestamp;
     private String parent;
@@ -45,10 +46,11 @@ public class Commit implements Serializable {
 
     /* TODO: fill in the rest of this class. */
 
-    public Commit(String message, String parent, Date timestamp) {
+    public Commit(String message, String parent, Date timestamp, String branchName) {
         this.message = message;
         this.parent = parent;
         this.timestamp = timestamp;
+        this.branchName = branchName;
         blobsInCommit = new HashMap<>();
     }
 
@@ -97,6 +99,9 @@ public class Commit implements Serializable {
     //Date: Thu Nov 9 20:00:05 2017 -0800
     //A commit message.
 
+    public String getBranchName() {
+        return branchName;
+    }
 
     public void printCommitLog() {
         System.out.println("===");

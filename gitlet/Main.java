@@ -33,19 +33,19 @@ public class Main {
                 c.commit(args[1]);
                 break;
             case "rm":
-
+                c.remove(args[1]);
                 break;
             case "log":
                 c.log();
                 break;
             case "global-log":
-
+                c.logFull();
                 break;
             case "find":
 
                 break;
             case "status":
-
+                c.status();
                 break;
             case "checkout":
                 if (args.length == 2) {
@@ -57,7 +57,7 @@ public class Main {
                 }
                 break;
             case "branch":
-
+                c.createBranch(args[1]);
                 break;
             case "rm-branch":
 

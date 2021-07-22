@@ -43,7 +43,7 @@ public class Command implements Serializable{
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
         HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
-        Commit newCommit = new Commit(message, latestCommit.getKey(), new Date());
+        Commit newCommit = new Commit(message, latestCommit.getKey(), new Date(), currentBranch.getName());
         File blobsFile = Utils.join(GITLET_DIR, "blobList.txt");
         ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
         for (int i = 0; i < fileNames.size(); i++) {
@@ -97,7 +97,9 @@ public class Command implements Serializable{
         HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
         Commit latestCommit = currentBranch.getCurrentCommit();
         while (latestCommit != null) {
-            latestCommit.printCommitLog();
+            if(latestCommit.getBranchName().equals(currentBranch.getName())) {
+                latestCommit.printCommitLog();
+            }
             String parent = latestCommit.getParent();
             if (parent != null) {
                 latestCommit = commitHashMap.get(parent);
@@ -105,6 +107,17 @@ public class Command implements Serializable{
                 latestCommit = null;
             }
         }
+    }
+
+    public void logFull() {
+        HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
+        for(int i = commitHashMap.size() - 1; i >= 0; i++) {
+            commitHashMap.get(i).printCommitLog();
+        }
+    }
+
+    public void remove(String fileName) {
+
     }
 
     public void fileCheckout(String dash, String fileName) {
@@ -189,5 +202,18 @@ public class Command implements Serializable{
             File x = Utils.join(CWD, blobCurrent.getName());
             Utils.writeObject(x, blobCurrent.getByteArray());
         }
+    }
+
+    public void createBranch(String branchName) {
+        /** Create initial commit */
+        File commit = Utils.join(GITLET_DIR, "commits.txt");
+        HashMap<String,Commit> CommitsMap = new HashMap<>();
+        Utils.writeObject(commit, CommitsMap);
+        Commit init = new Commit("initial commit", null, new Date(0), branchName);
+        init.addCommit(init.generateKey());
+//        state.put("currentCommit", init.getKey());
+        /** Create master branch and set its head*/
+        Branch branch = new Branch(branchName +".txt");
+        Utils.writeObject(BRANCH_DIR, branch);
     }
 }
