@@ -3,7 +3,7 @@ package gitlet;
 import java.io.File;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+ *  @author Abhi Gudimella, Alex Tian
  */
 public class Main {
 
@@ -22,29 +22,59 @@ public class Main {
         Command c = new Command();
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` command
+                if(args.length != 1) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.add(args[1]);
                 break;
             case "commit":
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.commit(args[1]);
                 break;
             case "rm":
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.remove(args[1]);
                 break;
             case "log":
+                if(args.length != 1) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.log();
                 break;
             case "global-log":
+                if(args.length != 1) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.logFull();
                 break;
             case "find":
-
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
+                c.find(args[1]);
                 break;
             case "status":
+                if(args.length != 1) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.status();
                 break;
             case "checkout":
@@ -54,18 +84,33 @@ public class Main {
                     c.fileCheckout(args[1], args[2]);
                 } else if (args.length == 4){
                     c.commitCheckout(args[1], args[2], args[3]);
+                } else {
+                    System.out.println("Incorrect Operands");
                 }
                 break;
             case "branch":
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
                 c.createBranch(args[1]);
                 break;
             case "rm-branch":
-
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
+                c.removeBranch(args[1]);
                 break;
             case "reset":
-
+                if(args.length != 2) {
+                    System.out.println("Incorrect Operands");
+                    break;
+                }
+                c.reset(args[1]);
                 break;
-
+            case "":
+                System.out.println("Please enter a command");
             default:
                 System.out.println("No command with that name exists");
             // TODO: FILL THE REST IN

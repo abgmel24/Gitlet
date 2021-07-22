@@ -10,11 +10,8 @@ import static gitlet.Utils.plainFilenamesIn;
 public class Command implements Serializable{
 
     //rm [file name]
-    //global-log
     //find [commit message]
-    //status
     //checkout [branch name]
-    //branch [branch name]
     //rm-branch [branch name]
     //reset [commit id]
 
@@ -101,11 +98,7 @@ public class Command implements Serializable{
                 latestCommit.printCommitLog();
             }
             String parent = latestCommit.getParent();
-            if (parent != null) {
-                latestCommit = commitHashMap.get(parent);
-            } else {
-                latestCommit = null;
-            }
+            latestCommit = commitHashMap.get(parent);
         }
     }
 
@@ -215,5 +208,17 @@ public class Command implements Serializable{
         /** Create master branch and set its head*/
         Branch branch = new Branch(branchName +".txt");
         Utils.writeObject(BRANCH_DIR, branch);
+    }
+
+    public void removeBranch(String branchnName) {
+
+    }
+
+    public void find(String commitID) {
+
+    }
+
+    public void reset(String commitID) {
+
     }
 }
