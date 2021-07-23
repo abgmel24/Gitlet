@@ -34,6 +34,7 @@ public class Main {
             case "add":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
@@ -44,6 +45,7 @@ public class Main {
             case "commit":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
@@ -54,6 +56,7 @@ public class Main {
             case "rm":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
@@ -64,6 +67,7 @@ public class Main {
             case "log":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 1) {
                     System.out.println("Incorrect Operands");
@@ -74,6 +78,7 @@ public class Main {
             case "global-log":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 1) {
                     System.out.println("Incorrect Operands");
@@ -84,6 +89,7 @@ public class Main {
             case "find":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
@@ -94,6 +100,7 @@ public class Main {
             case "status":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 1) {
                     System.out.println("Incorrect Operands");
@@ -104,6 +111,7 @@ public class Main {
             case "checkout":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if (args.length == 2) {
                     c.branchCheckout(args[1]);
@@ -118,6 +126,7 @@ public class Main {
             case "branch":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
@@ -128,6 +137,7 @@ public class Main {
             case "rm-branch":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
@@ -138,6 +148,7 @@ public class Main {
             case "reset":
                 if(!GITLET_DIR.exists()) {
                     System.out.println("Not in an initialized Gitlet directory.");
+                    break;
                 }
                 if(args.length != 2) {
                     System.out.println("Incorrect Operands");
