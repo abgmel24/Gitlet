@@ -191,9 +191,9 @@ public class Command implements Serializable{
             System.out.println(s);
         }
         //Modifications Not Staged for Commit
-
+        System.out.println("\n=== Modifications Not Staged For Commit ===");
         //Untracked Files
-
+        System.out.println("\n=== Untracked Files ===\n");
     }
 
     public void branchCheckout(String branchName) {
@@ -245,16 +245,10 @@ public class Command implements Serializable{
             System.out.println("A branch with that name already exists.");
             return;
         }
-        /** Create initial commit */
-        File commit = Utils.join(GITLET_DIR, "commits.txt");
-        HashMap<String,Commit> CommitsMap = Utils.readObject(commit, HashMap.class);
-        Utils.writeObject(commit, CommitsMap);
-        Commit init = new Commit("initial commit", null, new Date(0), branchName);
-        init.addCommit(init.generateKey());
-//        state.put("currentCommit", init.getKey());
         /** Create a new branch and set its head*/
         Branch branch = new Branch(branchName +".txt");
-        branch.setCommitId(init.getKey());
+        Branch currentBranch = Repository.getCurrentBranch();
+        branch.setCommitId(currentBranch.getCurrentCommitId());
         File branchFile = Utils.join(BRANCH_DIR, branch.getName());
         Utils.writeObject(branchFile, branch);
     }
