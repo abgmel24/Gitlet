@@ -49,13 +49,14 @@ public class Repository implements Serializable {
         Utils.writeObject(commit, CommitsMap);
         Commit init = new Commit("initial commit", null, new Date(0), "master");
         init.addCommit(init.generateKey());
-//        state.put("currentCommit", init.getKey());
         /** Create master branch and set its head*/
         File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
         BRANCH_DIR.mkdir();
         Branch master = new Branch("master.txt");
-        master.setHead(init);
+        master.setHead(init.getKey());
         state.put("currentBranch", master.getName());
+        File masterBranch = Utils.join(BRANCH_DIR, "master.txt");
+        Utils.writeObject(masterBranch, master);
         /** Create staging area */
         StagingArea stage = new StagingArea();
         /** Create empty blobs arraylist */

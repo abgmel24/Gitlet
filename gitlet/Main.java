@@ -1,7 +1,5 @@
 package gitlet;
 
-import java.io.File;
-
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author Abhi Gudimella, Alex Tian
  */
@@ -47,7 +45,7 @@ public class Main {
                     System.out.println("Incorrect Operands");
                     break;
                 }
-                c.remove(args[1]);
+                c.removeFile(args[1]);
                 break;
             case "log":
                 if(args.length != 1) {

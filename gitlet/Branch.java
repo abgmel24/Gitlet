@@ -19,17 +19,10 @@ public class Branch implements Serializable {
 
     public Branch(String name) {
         this.name = name;
-        File branchFile = Utils.join(BRANCH_DIR, name);
-        if (branchFile.exists()) {
-            System.out.println("Branch " + name + "already exists");
-            return;
-        }
-        Utils.writeObject(branchFile, this);
-        Branch thisBranch = Utils.readObject(branchFile, Branch.class);
     }
 
-    public void setHead(Commit commit) {
-        commitId = commit.getKey();
+    public void setHead(String commitId) {
+        this.commitId = commitId;
         File branchFile = Utils.join(BRANCH_DIR, name);
         Utils.writeObject(branchFile, this);
         if (STATE.exists()) {

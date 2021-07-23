@@ -30,21 +30,21 @@ public class Command implements Serializable{
             return;
         }
         Repository newRepo = new Repository();
-        System.out.println(plainFilenamesIn(CWD).toString());
     }
 
     /** gitlet commit - creates new commit and compares current stageAdd files to previous commit files to
      * determine new blobs that need to be initialized. */
     public void commit(String message) {
-        List<String> fileNames = Utils.plainFilenamesIn(stageAdd);
+        List<String> fileNamesAdd = Utils.plainFilenamesIn(stageAdd);
+        List<String> fileNamesRm = Utils.plainFilenamesIn(stageRm);
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
         HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
         Commit newCommit = new Commit(message, latestCommit.getKey(), new Date(), currentBranch.getName());
         File blobsFile = Utils.join(GITLET_DIR, "blobList.txt");
         ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
-        for (int i = 0; i < fileNames.size(); i++) {
-            File curr = Utils.join(stageAdd, fileNames.get(i));
+        for (int i = 0; i < fileNamesAdd.size(); i++) {
+            File curr = Utils.join(stageAdd, fileNamesAdd.get(i));
             Blob currBlob = Utils.readObject(curr, Blob.class);
             blobsList.add(currBlob);
             int blobIndex = blobsList.size() - 1;
@@ -53,16 +53,16 @@ public class Command implements Serializable{
         Utils.writeObject(blobsFile, blobsList);
         for (Object key : latestCommitBlobs.keySet()) {
             if (!newCommit.getBlobsMap().containsKey(key)) {
-                int index = latestCommitBlobs.get(key);
-                newCommit.addBlob(latestCommit.getBlob(key.toString()), index);
+                if (!fileNamesRm.contains(key)) {
+                    int index = latestCommitBlobs.get(key);
+                    newCommit.addBlob(latestCommit.getBlob(key.toString()), index);
+                }
             }
         }
         String newKey = newCommit.generateKey();
         newCommit.addCommit(newKey);
-        for(File file: stageAdd.listFiles()) {
-            file.delete();
-        }
-        currentBranch.setHead(newCommit);
+        clearStagingArea();
+        currentBranch.setHead(newCommit.getKey());
     }
 
     /** gitlet add - checks if file exists, then compares to latest commit's iteration and adds if different */
@@ -112,8 +112,23 @@ public class Command implements Serializable{
         }
     }
 
-    public void remove(String fileName) {
-
+    public void removeFile(String fileName) {
+        File removeFile;
+        List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
+        if (filesInStageAdd.contains(fileName)) {
+            removeFile = Utils.join(stageAdd, fileName);
+            removeFile.delete();
+        }
+        Branch currentBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currentBranch.getCurrentCommit();
+        if (latestCommit.getBlobsMap().containsKey(fileName) && !filesInStageAdd.contains(fileName)) {
+            removeFile = Utils.join(stageRm, fileName);
+            Utils.writeContents(removeFile, fileName);
+            removeFile = Utils.join(CWD, fileName);
+            removeFile.delete();
+        } else {
+            System.out.println("No reason to remove the file.");
+        }
     }
 
     public void fileCheckout(String dash, String fileName) {
@@ -182,28 +197,57 @@ public class Command implements Serializable{
     }
 
     public void branchCheckout(String branchName) {
+        if (!Utils.plainFilenamesIn(BRANCH_DIR).contains(branchName + ".txt")) {
+            System.out.println("No such branch exists.");
+            return;
+        }
+        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
+        if (state.get("currentBranch") == branchName + ".txt") {
+            System.out.println("No need to checkout the current branch.");
+            return;
+        }
         Branch branch = Repository.getBranch(branchName);
-        Commit branchCommit = branch.getCurrentCommit();
-        HashMap<String, Integer> branchBlobs = branchCommit.getBlobsMap();
+        commitFullCheckout(branch.getCurrentCommitId());
+        Repository.setCurrentBranch(branchName + ".txt");
+    }
+
+    public void commitFullCheckout(String commitId) {
+        Branch currentBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currentBranch.getCurrentCommit();
+        HashMap<String,Integer> currentBlobs = latestCommit.getBlobsMap();
+        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        Commit currentCommit = commitsHashMap.get(commitId);
+        HashMap<String,Integer> branchBlobs = currentCommit.getBlobsMap();
         ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
+        List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
         for(File f: CWD.listFiles()) {
-            //if(untracked) {
-            //  System,out.println("There is an untracked file in the way; delete it, or add and commit it first.");
-            //  return;
-            // }
-            //f.delete();
+            if(!branchBlobs.containsKey(f.getName()) && !filesInStageAdd.contains(f.getName())) {
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                return;
+            }
+        }
+        for (Object key: currentBlobs.keySet()) {
+            if (!branchBlobs.containsKey(key)) {
+                File f = Utils.join(CWD, (String) key);
+                f.delete();
+            }
         }
         for (Object key : branchBlobs.keySet()) {
             Blob blobCurrent = blobsList.get(branchBlobs.get(key));
             File x = Utils.join(CWD, blobCurrent.getName());
-            Utils.writeObject(x, blobCurrent.getByteArray());
+            Utils.writeContents(x, blobCurrent.getFileContent());
         }
+        clearStagingArea();
     }
-    /**BROKEN*/
+
     public void createBranch(String branchName) {
+        if(Utils.plainFilenamesIn(BRANCH_DIR).contains(branchName + ".txt")) {
+            System.out.println("A branch with that name already exists.");
+            return;
+        }
         /** Create initial commit */
         File commit = Utils.join(GITLET_DIR, "commits.txt");
-        HashMap<String,Commit> CommitsMap = new HashMap<>();
+        HashMap<String,Commit> CommitsMap = Utils.readObject(commit, HashMap.class);
         Utils.writeObject(commit, CommitsMap);
         Commit init = new Commit("initial commit", null, new Date(0), branchName);
         init.addCommit(init.generateKey());
@@ -212,25 +256,30 @@ public class Command implements Serializable{
         Branch branch = new Branch(branchName +".txt");
         branch.setCommitId(init.getKey());
         File branchFile = Utils.join(BRANCH_DIR, branch.getName());
-        if(branchFile.exists()) {
-            System.out.println("A branch with that name already exists.");
-            return;
-        }
         Utils.writeObject(branchFile, branch);
     }
 
     public void removeBranch(String branchName) {
-        File f = Utils.join(BRANCH_DIR, branchName);
-        if(!f.exists()) {
-            System.out.println("A branch with that name does not exist.");
-            return;
-        }
-        HashMap<String, String> state = Utils.readObject(STATE, HashMap.class);
+        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
         if(state.get("currentBranch").equals(branchName + ".txt")) {
             System.out.println("Cannot remove the current branch.");
             return;
+        }
+        File f = Utils.join(BRANCH_DIR, branchName + ".txt");
+        if(!f.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            return;
         } else {
             f.delete();
+        }
+    }
+
+    public void clearStagingArea() {
+        for(File file: stageAdd.listFiles()) {
+            file.delete();
+        }
+        for(File file: stageRm.listFiles()) {
+            file.delete();
         }
     }
 
@@ -241,7 +290,6 @@ public class Command implements Serializable{
             String key = mapElement.getKey().toString();
             Commit commit = (Commit) mapElement.getValue();
             if(commit.getMessage().equals(message)) {
-                System.out.println(key);
                 condition = true;
             }
         }
@@ -250,13 +298,14 @@ public class Command implements Serializable{
         }
     }
 
-    public void reset(String commitID) {
+    public void reset(String commitId) {
         HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
-        if(!commitHashMap.containsKey(commitID)) {
+        if(!commitHashMap.containsKey(commitId)) {
             System.out.println("No commit with that id exists.");
             return;
         }
-        //
-        //
+        commitFullCheckout(commitId);
+        Branch currentBranch = Repository.getCurrentBranch();
+        currentBranch.setHead(commitId);
     }
 }
