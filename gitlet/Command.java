@@ -35,6 +35,14 @@ public class Command implements Serializable{
     /** gitlet commit - creates new commit and compares current stageAdd files to previous commit files to
      * determine new blobs that need to be initialized. */
     public void commit(String message) {
+        if (stageAdd.length() == 0 && stageRm.length() == 0) {
+            System.out.println("No changes added to the commit.");
+            return;
+        }
+        if (message == "") {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
         List<String> fileNamesAdd = Utils.plainFilenamesIn(stageAdd);
         List<String> fileNamesRm = Utils.plainFilenamesIn(stageRm);
         Branch currentBranch = Repository.getCurrentBranch();
@@ -169,7 +177,7 @@ public class Command implements Serializable{
 
     public void status() {
         //Branches
-        System.out.println("=== Branches ====") ;
+        System.out.println("=== Branches ===") ;
         List<String> list = Utils.plainFilenamesIn(BRANCH_DIR);
         for(String s: list) {
             if(s.equals(Repository.getCurrentBranch().getName())) {
@@ -185,7 +193,7 @@ public class Command implements Serializable{
             System.out.println(s);
         }
         //Removed Files
-        System.out.println("\n===Removed Files===");
+        System.out.println("\n=== Removed Files ===");
         list = plainFilenamesIn(stageRm);
         for(String s: list) {
             System.out.println(s);
