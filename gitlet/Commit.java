@@ -40,9 +40,9 @@ public class Commit implements Serializable {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /** The Commit File. */
-    public static final File COMMITS = join(GITLET_DIR, "commits.txt");
+    public static final File COMMITS = join(GITLET_DIR, "commits");
 
-    public static final File BLOBS = join(GITLET_DIR, "blobList.txt");
+    public static final File BLOBS = join(GITLET_DIR, "blobList");
 
     /* TODO: fill in the rest of this class. */
 

@@ -16,12 +16,12 @@ public class Command implements Serializable{
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
-    public static final File COMMITS = join(GITLET_DIR, "commits.txt");
+    public static final File COMMITS = join(GITLET_DIR, "commits");
     public static final File stageAdd = Utils.join(GITLET_DIR, "stage/stageAdd");
     public static final File stageRm = Utils.join(GITLET_DIR, "stage/stageRm");
-    public static final File BLOBS = Utils.join(GITLET_DIR, "blobList.txt");
+    public static final File BLOBS = Utils.join(GITLET_DIR, "blobList");
     public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
-    public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
+    public static final File STATE = Utils.join(GITLET_DIR, "state");
 
 
     public void init() {
@@ -49,7 +49,7 @@ public class Command implements Serializable{
         Commit latestCommit = currentBranch.getCurrentCommit();
         HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
         Commit newCommit = new Commit(message, latestCommit.getKey(), new Date(), currentBranch.getName());
-        File blobsFile = Utils.join(GITLET_DIR, "blobList.txt");
+        File blobsFile = Utils.join(GITLET_DIR, "blobList");
         ArrayList<Blob> blobsList = Utils.readObject(blobsFile, ArrayList.class);
         for (int i = 0; i < fileNamesAdd.size(); i++) {
             File curr = Utils.join(stageAdd, fileNamesAdd.get(i));
@@ -205,18 +205,18 @@ public class Command implements Serializable{
     }
 
     public void branchCheckout(String branchName) {
-        if (!Utils.plainFilenamesIn(BRANCH_DIR).contains(branchName + ".txt")) {
+        if (!Utils.plainFilenamesIn(BRANCH_DIR).contains(branchName)) {
             System.out.println("No such branch exists.");
             return;
         }
         HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
-        if (state.get("currentBranch") == branchName + ".txt") {
+        if (state.get("currentBranch") == branchName) {
             System.out.println("No need to checkout the current branch.");
             return;
         }
         Branch branch = Repository.getBranch(branchName);
         commitFullCheckout(branch.getCurrentCommitId());
-        Repository.setCurrentBranch(branchName + ".txt");
+        Repository.setCurrentBranch(branchName);
     }
 
     public void commitFullCheckout(String commitId) {
@@ -249,12 +249,12 @@ public class Command implements Serializable{
     }
 
     public void createBranch(String branchName) {
-        if(Utils.plainFilenamesIn(BRANCH_DIR).contains(branchName + ".txt")) {
+        if(Utils.plainFilenamesIn(BRANCH_DIR).contains(branchName)) {
             System.out.println("A branch with that name already exists.");
             return;
         }
         /** Create a new branch and set its head*/
-        Branch branch = new Branch(branchName +".txt");
+        Branch branch = new Branch(branchName);
         Branch currentBranch = Repository.getCurrentBranch();
         branch.setCommitId(currentBranch.getCurrentCommitId());
         File branchFile = Utils.join(BRANCH_DIR, branch.getName());
@@ -263,11 +263,11 @@ public class Command implements Serializable{
 
     public void removeBranch(String branchName) {
         HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
-        if(state.get("currentBranch").equals(branchName + ".txt")) {
+        if(state.get("currentBranch").equals(branchName)) {
             System.out.println("Cannot remove the current branch.");
             return;
         }
-        File f = Utils.join(BRANCH_DIR, branchName + ".txt");
+        File f = Utils.join(BRANCH_DIR, branchName);
         if(!f.exists()) {
             System.out.println("A branch with that name does not exist.");
             return;

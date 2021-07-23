@@ -14,8 +14,8 @@ public class Branch implements Serializable {
     public static final File CWD = new File(System.getProperty("user.dir"));
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
     public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
-    public static final File COMMITS = join(GITLET_DIR, "commits.txt");
-    public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
+    public static final File COMMITS = join(GITLET_DIR, "commits");
+    public static final File STATE = Utils.join(GITLET_DIR, "state");
 
     public Branch(String name) {
         this.name = name;

@@ -29,7 +29,7 @@ public class Repository implements Serializable {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
-    public static final File STATE = Utils.join(GITLET_DIR, "state.txt");
+    public static final File STATE = Utils.join(GITLET_DIR, "state");
     public static final File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
 
     /* TODO: fill in the rest of this class. */
@@ -44,7 +44,7 @@ public class Repository implements Serializable {
         /** Initialize State */
         HashMap<String,String> state = new HashMap<>();
         /** Create initial commit */
-        File commit = Utils.join(GITLET_DIR, "commits.txt");
+        File commit = Utils.join(GITLET_DIR, "commits");
         HashMap<String,Commit> CommitsMap = new HashMap<>();
         Utils.writeObject(commit, CommitsMap);
         Commit init = new Commit("initial commit", null, new Date(0), "master");
@@ -52,15 +52,15 @@ public class Repository implements Serializable {
         /** Create master branch and set its head*/
         File BRANCH_DIR = Utils.join(GITLET_DIR, "branches");
         BRANCH_DIR.mkdir();
-        Branch master = new Branch("master.txt");
+        Branch master = new Branch("master");
         master.setHead(init.getKey());
         state.put("currentBranch", master.getName());
-        File masterBranch = Utils.join(BRANCH_DIR, "master.txt");
+        File masterBranch = Utils.join(BRANCH_DIR, "master");
         Utils.writeObject(masterBranch, master);
         /** Create staging area */
         StagingArea stage = new StagingArea();
         /** Create empty blobs arraylist */
-        File blobListFile = Utils.join(GITLET_DIR, "blobList.txt");
+        File blobListFile = Utils.join(GITLET_DIR, "blobList");
         ArrayList<Blob> blobList = new ArrayList<>();
         Utils.writeObject(blobListFile, blobList);
         /** Create Saved State */
