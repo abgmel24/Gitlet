@@ -10,9 +10,6 @@ import static gitlet.Utils.*;
 
 public class Command implements Serializable{
 
-    //rm [file name]
-    //checkout [branch name]
-    //reset [commit id]
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
@@ -166,6 +163,7 @@ public class Command implements Serializable{
     }
 
     public void commitCheckout(String commitId, String fileName){
+        commitId = findCommitID(commitId);
         File fileToCheckout = new File(CWD, fileName); //current version of the file
         Branch currBranch = Repository.getCurrentBranch();
         HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
@@ -231,10 +229,11 @@ public class Command implements Serializable{
     }
 
     public void commitFullCheckout(String commitId) {
+        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        commitId = findCommitID(commitId);
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
         HashMap<String,Integer> currentBlobs = latestCommit.getBlobsMap();
-        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
         Commit currentCommit = commitsHashMap.get(commitId);
         HashMap<String,Integer> branchBlobs = currentCommit.getBlobsMap();
         ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
@@ -302,7 +301,6 @@ public class Command implements Serializable{
         HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
         boolean condition = false;
         for(Map.Entry mapElement: commitHashMap.entrySet()) {
-            String key = mapElement.getKey().toString();
             Commit commit = (Commit) mapElement.getValue();
             if(commit.getMessage().equals(message)) {
                 condition = true;
@@ -315,6 +313,7 @@ public class Command implements Serializable{
     }
 
     public void reset(String commitId) {
+        commitId = findCommitID(commitId);
         HashMap<String,Commit> commitHashMap = Utils.readObject(COMMITS, HashMap.class);
         if(!commitHashMap.containsKey(commitId)) {
             System.out.println("No commit with that id exists.");
@@ -338,5 +337,20 @@ public class Command implements Serializable{
             return true;
         }
         return false;
+    }
+
+    public String findCommitID(String commitId) {
+        if(commitId.length() == 40) {
+            return commitId;
+        }
+        HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
+        for(Map.Entry mapElement : commitsHashMap.entrySet())
+        {
+            String key = mapElement.getKey().toString();
+            if (key.startsWith(commitId)) {
+                return key;
+            }
+        }
+        return commitId;
     }
 }
