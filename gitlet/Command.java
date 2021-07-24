@@ -238,9 +238,11 @@ public class Command implements Serializable{
         Commit currentCommit = commitsHashMap.get(commitId);
         HashMap<String,Integer> branchBlobs = currentCommit.getBlobsMap();
         ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
-        List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
-        for(File f: CWD.listFiles()) {
-            if(isUntracked(f.getName())) {
+        List<String> CWDFiles = Utils.plainFilenamesIn(CWD);
+        //System.out.println(CWDFiles);
+        for(String s: CWDFiles) {
+            //System.out.println("file name: " + s);
+            if(isUntracked(s) && branchBlobs.containsKey(s)) {
                 System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 return;
             }
