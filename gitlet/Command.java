@@ -144,7 +144,7 @@ public class Command implements Serializable{
             removeFile = Utils.join(stageRm, fileName);
             Utils.writeContents(removeFile, fileName);
             removeFile = Utils.join(CWD, fileName);
-            if(!removeFile.exists()) {
+            if(removeFile.exists()) {
                 removeFile.delete();
             }
         }
