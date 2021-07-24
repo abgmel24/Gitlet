@@ -218,8 +218,7 @@ public class Command implements Serializable{
             System.out.println("No such branch exists.");
             return;
         }
-        HashMap<String,String> state = Utils.readObject(STATE, HashMap.class);
-        if (state.get("currentBranch") == branchName) {
+        if(Repository.getCurrentBranch().getName().equals(branchName)) {
             System.out.println("No need to checkout the current branch.");
             return;
         }
