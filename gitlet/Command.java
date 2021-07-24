@@ -240,7 +240,7 @@ public class Command implements Serializable{
         ArrayList<Blob> blobsList = Utils.readObject(BLOBS, ArrayList.class);
         List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
         for(File f: CWD.listFiles()) {
-            if(!branchBlobs.containsKey(f.getName()) && !filesInStageAdd.contains(f.getName())) {
+            if(isUntracked(f.getName())) {
                 System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 return;
             }
@@ -321,5 +321,20 @@ public class Command implements Serializable{
         commitFullCheckout(commitId);
         Branch currentBranch = Repository.getCurrentBranch();
         currentBranch.setHead(commitId);
+    }
+
+    public boolean isUntracked(String fileName) {
+        Branch currentBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currentBranch.getCurrentCommit();
+        List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
+        File file = Utils.join(CWD, fileName);
+        File removalFile = Utils.join(stageRm, fileName);
+        if(!latestCommit.getBlobsMap().containsKey(fileName) && !filesInStageAdd.contains(fileName)) {
+            return true;
+        }
+        if(removalFile.exists() && file.exists()) {
+            return true;
+        }
+        return false;
     }
 }
