@@ -331,7 +331,7 @@ public class Command implements Serializable{
         List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
         File file = Utils.join(CWD, fileName);
         File removalFile = Utils.join(stageRm, fileName);
-        if(!latestCommit.getBlobsMap().containsKey(fileName) && !filesInStageAdd.contains(fileName)) {
+        if(!latestCommit.getBlobsMap().containsKey(fileName) && !filesInStageAdd.contains(fileName)) { //
             return true;
         }
         if(removalFile.exists() && file.exists()) {

@@ -116,8 +116,16 @@ public class Main {
                 if (args.length == 2) {
                     c.branchCheckout(args[1]);
                 } else if (args.length == 3) {
+                    if(!args[2].equals("--")) {
+                        System.out.println("Incorrect Operands");
+                        break;
+                    }
                     c.fileCheckout(args[2]);
                 } else if (args.length == 4){
+                    if(!args[3].equals("--")) {
+                        System.out.println("Incorrect Operands");
+                        break;
+                    }
                     c.commitCheckout(args[1], args[3]);
                 } else {
                     System.out.println("Incorrect Operands");
