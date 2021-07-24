@@ -206,7 +206,6 @@ public class Command implements Serializable{
         //Removed Files
         System.out.println("\n=== Removed Files ===");
         list = plainFilenamesIn(stageRm);
-        System.out.println(list.isEmpty());
         for(String s: list) {
             System.out.println(s);
         }
