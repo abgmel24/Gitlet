@@ -35,16 +35,17 @@ public class Command implements Serializable{
     /** gitlet commit - creates new commit and compares current stageAdd files to previous commit files to
      * determine new blobs that need to be initialized. */
     public void commit(String message) {
-        if (stageAdd.length() == 0 && stageRm.length() == 0) {
-            System.out.println("No changes added to the commit.");
-            return;
-        }
-        if (message == "") {
+        if (message.equals("")) {
             System.out.println("Please enter a commit message.");
             return;
         }
         List<String> fileNamesAdd = Utils.plainFilenamesIn(stageAdd);
         List<String> fileNamesRm = Utils.plainFilenamesIn(stageRm);
+        if (fileNamesRm.isEmpty() && fileNamesAdd.isEmpty()) {
+            System.out.println("No changes added to the commit.");
+            return;
+        }
+
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
         HashMap<String, Integer> latestCommitBlobs = latestCommit.getBlobsMap();
@@ -75,6 +76,7 @@ public class Command implements Serializable{
 
     /** gitlet add - checks if file exists, then compares to latest commit's iteration and adds if different */
     public void add(String filePath) {
+        List<String> fileNamesRm = Utils.plainFilenamesIn(stageRm);
         File fileToAdd = Utils.join(CWD, filePath);
         String fileName = fileToAdd.getName();
         if (!fileToAdd.exists()) {
@@ -88,6 +90,10 @@ public class Command implements Serializable{
         Branch currentBranch = Repository.getCurrentBranch();
         Commit latestCommit = currentBranch.getCurrentCommit();
         if (latestCommit.getBlobsMap().containsKey(fileName)) {
+            if(fileNamesRm.contains(fileName)) {
+                File f = Utils.join(stageRm, fileName);
+                f.delete();
+            }
             if (!latestCommit.getBlob(fileName).compareBlob(fileContentString)) {
                 Utils.writeObject(addFile, curr);
                 return;
@@ -122,24 +128,29 @@ public class Command implements Serializable{
 
     public void removeFile(String fileName) {
         File removeFile;
+        Branch currentBranch = Repository.getCurrentBranch();
+        Commit latestCommit = currentBranch.getCurrentCommit();
         List<String> filesInStageAdd = Utils.plainFilenamesIn(stageAdd);
+        /**if file is not tracked by previous commit and not staged for addition*/
+        if(!latestCommit.getBlobsMap().containsKey(fileName) && !filesInStageAdd.contains(fileName)) {
+            System.out.println("No reason to remove the file.");
+            return;
+        }
         if (filesInStageAdd.contains(fileName)) {
             removeFile = Utils.join(stageAdd, fileName);
             removeFile.delete();
         }
-        Branch currentBranch = Repository.getCurrentBranch();
-        Commit latestCommit = currentBranch.getCurrentCommit();
-        if (latestCommit.getBlobsMap().containsKey(fileName) && !filesInStageAdd.contains(fileName)) {
+        if(latestCommit.getBlobsMap().containsKey(fileName)) {
             removeFile = Utils.join(stageRm, fileName);
             Utils.writeContents(removeFile, fileName);
             removeFile = Utils.join(CWD, fileName);
-            removeFile.delete();
-        } else {
-            System.out.println("No reason to remove the file.");
+            if(!removeFile.exists()) {
+                removeFile.delete();
+            }
         }
     }
 
-    public void fileCheckout(String dash, String fileName) {
+    public void fileCheckout(String fileName) {
         File fileToCheckout = new File(CWD, fileName); //current version of the file
         Branch currBranch = Repository.getCurrentBranch();
         Commit latestCommit = currBranch.getCurrentCommit();
@@ -154,7 +165,7 @@ public class Command implements Serializable{
         }
     }
 
-    public void commitCheckout(String commitId, String dash, String fileName){
+    public void commitCheckout(String commitId, String fileName){
         File fileToCheckout = new File(CWD, fileName); //current version of the file
         Branch currBranch = Repository.getCurrentBranch();
         HashMap<String,Commit> commitsHashMap = Utils.readObject(COMMITS, HashMap.class);
@@ -195,6 +206,7 @@ public class Command implements Serializable{
         //Removed Files
         System.out.println("\n=== Removed Files ===");
         list = plainFilenamesIn(stageRm);
+        System.out.println(list.isEmpty());
         for(String s: list) {
             System.out.println(s);
         }

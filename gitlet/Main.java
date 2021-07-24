@@ -15,7 +15,7 @@ public class Main {
     public static final File GITLET_DIR = Utils.join(CWD, ".gitlet");
 
     public static void main(String[] args) {
-        // TODO: what if args is empty?
+        //if args is empty
         if(args.length == 0) {
             System.out.println("Please enter a command");
             return;
@@ -116,9 +116,9 @@ public class Main {
                 if (args.length == 2) {
                     c.branchCheckout(args[1]);
                 } else if (args.length == 3) {
-                    c.fileCheckout(args[1], args[2]);
+                    c.fileCheckout(args[2]);
                 } else if (args.length == 4){
-                    c.commitCheckout(args[1], args[2], args[3]);
+                    c.commitCheckout(args[1], args[3]);
                 } else {
                     System.out.println("Incorrect Operands");
                 }
@@ -156,11 +156,8 @@ public class Main {
                 }
                 c.reset(args[1]);
                 break;
-            case "":
-                System.out.println("Please enter a command");
             default:
                 System.out.println("No command with that name exists");
-            // TODO: FILL THE REST IN
         }
     }
 
