@@ -304,6 +304,7 @@ public class Command implements Serializable{
             Commit commit = (Commit) mapElement.getValue();
             if(commit.getMessage().equals(message)) {
                 condition = true;
+                System.out.println(commit.getKey());
             }
         }
         if(!condition) {
